@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build --workspace=web",
+  "buildCommand": "npx turbo build --filter=web",
   "outputDirectory": "apps/web/dist",
   "framework": "vite",
   "rewrites": [
