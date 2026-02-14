@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { collection, query, where, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../firebase';
 
 export const AssignToClient: React.FC = () => {
@@ -29,7 +29,8 @@ export const AssignToClient: React.FC = () => {
 
   const handleAssign = async (e: React.FormEvent) => {
     e.preventDefault();
-    await addDoc(collection(db, 'clientAssignments'), {
+    const assignmentId = `${selectedReport}_${selectedClient}`;
+    await setDoc(doc(db, 'clientAssignments', assignmentId), {
       clientId: selectedClient,
       reportId: selectedReport,
       expiryDate: new Date(expiry),
