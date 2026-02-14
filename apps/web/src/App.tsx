@@ -40,6 +40,20 @@ const App: React.FC = () => {
     );
   }
 
+  if (userData && !userData.approved) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 text-center">
+        <div className="bg-white p-8 rounded-lg shadow-md max-w-md">
+          <h2 className="text-2xl font-bold text-orange-600 mb-4">Approval Pending</h2>
+          <p className="text-gray-700 mb-6">
+            Your account (<strong>{userData.email}</strong>) has been created successfully but is currently awaiting administrator approval.
+          </p>
+          <button onClick={() => signOut(auth)} className="text-blue-600 underline">Logout</button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`min-h-screen ${isBlurred ? 'blur-xl' : ''} transition-all duration-300`}>
       <header className="bg-blue-900 text-white p-4 shadow-lg flex justify-between items-center">
