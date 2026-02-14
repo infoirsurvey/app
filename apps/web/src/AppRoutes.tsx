@@ -48,11 +48,11 @@ const Dashboard: React.FC = () => {
 };
 
 export const AppRoutes: React.FC = () => {
-  const { user, userData } = useAuth();
+  const { userData } = useAuth();
 
   return (
     <Routes>
-      <Route path="/" element={user ? <Navigate to="/dashboard" /> : <div className="text-center p-8">Redirecting...</div>} />
+      <Route path="/" element={<Navigate to="/dashboard" />} />
 
       <Route path="/pending" element={
           userData && !userData.approved ? (

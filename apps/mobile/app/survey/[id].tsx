@@ -62,6 +62,20 @@ export default function SurveyFormScreen() {
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>{assignment.electionType} Survey</Text>
+
+      {/* Conditional Rendering based on Election Type */}
+      {assignment.electionType === 'MLA' && (
+        <View style={styles.infoBox}>
+            <Text style={styles.infoText}>Performing Assembly Constituency Level Survey</Text>
+        </View>
+      )}
+
+      {assignment.electionType === 'MP' && (
+        <View style={styles.infoBox}>
+            <Text style={styles.infoText}>Performing Parliamentary Constituency Level Survey</Text>
+        </View>
+      )}
+
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Demographics</Text>
         <Text>Male Count</Text>
@@ -98,5 +112,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 22, fontWeight: 'bold', marginBottom: 20 },
   section: { marginBottom: 20 },
   sectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
-  input: { borderWidth: 1, borderColor: '#ccc', borderRadius: 5, padding: 10, marginTop: 5, backgroundColor: 'white' }
+  input: { borderWidth: 1, borderColor: '#ccc', borderRadius: 5, padding: 10, marginTop: 5, backgroundColor: 'white' },
+  infoBox: { backgroundColor: '#e3f2fd', padding: 10, borderRadius: 5, marginBottom: 20 },
+  infoText: { color: '#0d47a1', fontSize: 14, fontWeight: 'bold' },
 });
