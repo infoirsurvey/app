@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { collection, query, where, onSnapshot, doc, updateDoc, addDoc, serverTimestamp, orderBy } from 'firebase/firestore';
+import { collection, query, onSnapshot, doc, updateDoc, addDoc, serverTimestamp, orderBy } from 'firebase/firestore';
 import { db, auth } from '../../firebase';
 
 export const ReportVersioning: React.FC = () => {
