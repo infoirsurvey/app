@@ -1,33 +1,39 @@
 
-import { initializeApp } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { getFirestore, doc, updateDoc } from "firebase/firestore";
+import * as admin from 'firebase-admin';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDAYqHb4fw3L2PNfnJeGd-92uPSG-pky0U",
-  authDomain: "ir-survey-fc9d7.firebaseapp.com",
-  projectId: "ir-survey-fc9d7",
-  storageBucket: "ir-survey-fc9d7.firebasestorage.app",
-  messagingSenderId: "624690659460",
-  appId: "1:624690659460:web:66be46afdc602802f682d1"
-};
+// Initialize the Admin SDK
+// In a real scenario, you'd provide service account credentials
+// For this environment, we assume the credentials are in a specific file or env var
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+//   projectId: "ir-survey-fc9d7"
+// });
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-async function approveUser(uid: string) {
-  const userRef = doc(db, "users", uid);
-  await updateDoc(userRef, {
-    approved: true,
-    role: 'ADMIN'
+// If running in a trusted environment (like a Google Cloud Function or with GOOGLE_APPLICATION_CREDENTIALS)
+if (!admin.apps.length) {
+  admin.initializeApp({
+      projectId: "ir-survey-fc9d7"
   });
-  console.log("User approved as ADMIN");
 }
 
-// usage: node approve_admin.js <UID>
+const db = admin.firestore();
+
+async function approveUser(uid: string) {
+  try {
+    const userRef = db.collection("users").doc(uid);
+    await userRef.update({
+      approved: true,
+      role: 'ADMIN'
+    });
+    console.log(`User ${uid} successfully approved as ADMIN`);
+  } catch (error) {
+    console.error("Error approving user:", error);
+  }
+}
+
 const uid = process.argv[2];
 if (uid) {
   approveUser(uid);
 } else {
-  console.log("Please provide a UID");
+  console.log("Please provide a UID as an argument: ts-node scripts/approve_admin.ts <UID>");
 }
