@@ -1,0 +1,44 @@
+{
+  "expo": {
+    "name": "IR Political Strategies",
+    "slug": "ir-political-strategies",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.irpolitical.strategies",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "This app needs access to photos to upload survey maps."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.irpolitical.strategies",
+      "permissions": ["CAMERA", "READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"]
+    },
+    "extra": {
+      "eas": {
+        "projectId": "PLACEHOLDER"
+      }
+    },
+    "plugins": [
+      [
+        "expo-screen-capture",
+        {
+          "screenshot": false
+        }
+      ]
+    ]
+  }
+}
