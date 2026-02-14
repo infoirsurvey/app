@@ -35,13 +35,13 @@ service cloud.firestore {
 
     // Assignments collection
     match /assignments/{assignmentId} {
-      allow read: if isSignedIn() && (
+      allow read: if isApproved() && (
         hasRole('ADMIN') ||
         hasRole('MANAGER') ||
         (hasRole('SURVEYOR') && resource.data.surveyorId == request.auth.uid)
       );
-      allow create: if hasRole('ADMIN') || hasRole('MANAGER');
-      allow update: if isSignedIn() && (
+      allow create: if isApproved() && (hasRole('ADMIN') || hasRole('MANAGER'));
+      allow update: if isApproved() && (
         hasRole('ADMIN') ||
         hasRole('MANAGER') ||
         (hasRole('SURVEYOR') && resource.data.surveyorId == request.auth.uid && resource.data.status == 'PENDING')
@@ -50,14 +50,14 @@ service cloud.firestore {
 
     // Survey Data
     match /surveys/{surveyId} {
-      allow read: if isSignedIn() && (
+      allow read: if isApproved() && (
         hasRole('ADMIN') ||
         hasRole('MANAGER') ||
         hasRole('INTERNAL_OFFICE') ||
         (hasRole('SURVEYOR') && resource.data.surveyorId == request.auth.uid)
       );
-      allow create: if hasRole('SURVEYOR');
-      allow update: if isSignedIn() && (
+      allow create: if isApproved() && hasRole('SURVEYOR');
+      allow update: if isApproved() && (
         hasRole('ADMIN') ||
         hasRole('MANAGER') ||
         (hasRole('INTERNAL_OFFICE') && resource.data.locked == false) ||
@@ -67,28 +67,28 @@ service cloud.firestore {
 
     // Reports
     match /reports/{reportId} {
-      allow read: if isSignedIn() && (
+      allow read: if isApproved() && (
         hasRole('ADMIN') ||
         hasRole('MANAGER') ||
         (hasRole('CLIENT') && isReportAssignedToClient(reportId))
       );
-      allow create, update: if hasRole('ADMIN') || hasRole('MANAGER');
+      allow create, update: if isApproved() && (hasRole('ADMIN') || hasRole('MANAGER'));
     }
 
     // Client Assignments
     match /clientAssignments/{assignmentId} {
-      allow read: if isSignedIn() && (
+      allow read: if isApproved() && (
         hasRole('ADMIN') ||
         hasRole('MANAGER') ||
         (hasRole('CLIENT') && resource.data.clientId == request.auth.uid)
       );
-      allow create, update: if hasRole('ADMIN') || hasRole('MANAGER');
+      allow create, update: if isApproved() && (hasRole('ADMIN') || hasRole('MANAGER'));
     }
 
     // Audit Logs
     match /auditLogs/{logId} {
-      allow read: if isAdmin();
-      allow create: if isSignedIn();
+      allow read: if isAdmin() && isApproved();
+      allow create: if isSignedIn() && isApproved();
     }
   }
 }

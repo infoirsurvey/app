@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { collection, query, where, onSnapshot, doc, updateDoc, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, doc, updateDoc, addDoc, getDocs, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../firebase';
 
 export const Approval: React.FC = () => {
@@ -16,18 +16,29 @@ export const Approval: React.FC = () => {
   }, []);
 
   const handleApprove = async (assignment: any) => {
+    // 0. Fetch the associated survey data
+    const surveyQuery = query(collection(db, 'surveys'), where('assignmentId', '==', assignment.id));
+    const surveySnap = await getDocs(surveyQuery);
+
+    if (surveySnap.empty) {
+        alert('No survey data found for this assignment');
+        return;
+    }
+
+    const surveyData = surveySnap.docs[0].data();
+
     // 1. Update assignment status
     await updateDoc(doc(db, 'assignments', assignment.id), {
       status: 'APPROVED'
     });
 
-    // 2. Initial Report Generation (Placeholder for Versioning)
+    // 2. Initial Report Generation
     await addDoc(collection(db, 'reports'), {
       assignmentId: assignment.id,
       version: 1,
+      data: surveyData,
       generatedAt: serverTimestamp(),
       active: true,
-      // In a real scenario, we'd fetch the survey data and freeze it here
     });
 
     alert('Assignment approved and Report v1 generated');

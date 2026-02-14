@@ -1,50 +1,63 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import { doc, updateDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db, auth } from '../firebase';
+import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db, auth } from '../../src/firebase';
 import { Assignment } from '@ir-political-strategies/shared';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
-export const SurveyForm = ({ route, navigation }: any) => {
-  const { assignment } = route.params as { assignment: Assignment };
+export default function SurveyFormScreen() {
+  const { id } = useLocalSearchParams();
+  const [assignment, setAssignment] = useState<Assignment | null>(null);
   const [male, setMale] = useState('');
   const [female, setFemale] = useState('');
+  const [sc, setSc] = useState('');
+  const [st, setSt] = useState('');
+  const [bc, setBc] = useState('');
   const [observations, setObservations] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchAssignment = async () => {
+      const snap = await getDoc(doc(db, 'assignments', id as string));
+      if (snap.exists()) setAssignment({ id: snap.id, ...snap.data() } as Assignment);
+    };
+    fetchAssignment();
+  }, [id]);
 
   const handleSubmit = async () => {
-    if (!male || !female) {
+    if (!male || !female || !assignment) {
       Alert.alert('Error', 'Please fill demographics');
       return;
     }
     setIsSubmitting(true);
     try {
-      // Create survey entry
       await addDoc(collection(db, 'surveys'), {
         assignmentId: assignment.id,
         surveyorId: auth.currentUser?.uid,
         locationData: assignment.location,
         sampleData: {
           gender: { male: parseInt(male), female: parseInt(female), other: 0 },
+          categories: { sc: parseInt(sc) || 0, st: parseInt(st) || 0, bc: parseInt(bc) || 0 },
           totalSample: parseInt(male) + parseInt(female)
         },
         observations,
-        locked: true, // Submitted survey is locked for Surveyor
+        locked: true,
         submittedAt: serverTimestamp(),
       });
 
-      // Update assignment status
-      await updateDoc(doc(db, 'assignments', assignment.id), {
-        status: 'SUBMITTED'
-      });
+      await updateDoc(doc(db, 'assignments', assignment.id), { status: 'SUBMITTED' });
 
       Alert.alert('Success', 'Survey submitted successfully');
-      navigation.goBack();
+      router.back();
     } catch (error: any) {
       Alert.alert('Error', error.message);
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (!assignment) return <Text>Loading...</Text>;
 
   return (
     <ScrollView style={styles.container}>
@@ -55,6 +68,15 @@ export const SurveyForm = ({ route, navigation }: any) => {
         <TextInput value={male} onChangeText={setMale} keyboardType="numeric" style={styles.input} />
         <Text>Female Count</Text>
         <TextInput value={female} onChangeText={setFemale} keyboardType="numeric" style={styles.input} />
+      </View>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Categories (Caste)</Text>
+        <Text>SC Count</Text>
+        <TextInput value={sc} onChangeText={setSc} keyboardType="numeric" style={styles.input} />
+        <Text>ST Count</Text>
+        <TextInput value={st} onChangeText={setSt} keyboardType="numeric" style={styles.input} />
+        <Text>BC Count</Text>
+        <TextInput value={bc} onChangeText={setBc} keyboardType="numeric" style={styles.input} />
       </View>
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Observations</Text>
@@ -69,7 +91,7 @@ export const SurveyForm = ({ route, navigation }: any) => {
       <Button title={isSubmitting ? "Submitting..." : "Submit Survey"} onPress={handleSubmit} disabled={isSubmitting} />
     </ScrollView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
