@@ -1,6 +1,6 @@
 {
   "buildCommand": "npx turbo build --filter=web",
-  "outputDirectory": "apps/web/dist",
+  "outputDirectory": "web/dist",
   "framework": "vite",
   "rewrites": [
     {
