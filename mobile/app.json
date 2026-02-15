@@ -31,14 +31,6 @@
       "eas": {
         "projectId": "PLACEHOLDER"
       }
-    },
-    "plugins": [
-      [
-        "expo-screen-capture",
-        {
-          "screenshot": false
-        }
-      ]
-    ]
+    }
   }
 }
