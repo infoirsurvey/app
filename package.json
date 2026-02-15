@@ -3,7 +3,8 @@
   "private": true,
   "packageManager": "npm@11.7.0",
   "workspaces": [
-    "apps/*",
+    "mobile",
+    "web",
     "packages/*"
   ],
   "scripts": {
